@@ -1,0 +1,632 @@
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local CoreGui = game:GetService("CoreGui")
+
+local ITEM_PROPERTIES = {
+    Hammer = {Color = Color3.new(0.9725, 0.9725, 0.9725), Size = Vector3.new(0.9, 0.3, 2.7)},
+    BlueKey = {Color = Color3.new(0, 1, 1), Size = Vector3.new(0.7, 1.6, 0.15)},
+    Ammo = {Color = Color3.new(0.9725, 0.9725, 0.9725), Size = Vector3.new(1.55, 1.2, 0.9)},
+    GreenKey = {Color = Color3.new(0, 1, 0), Size = Vector3.new(0.7, 1.6, 0.15)},
+    PurpleKey = {
+        Colors = {
+            Color3.new(0.7059, 0, 0.7059), -- Старый цвет (RGB(180, 0, 180))
+            Color3.fromRGB(180, 128, 255) -- Новый цвет Alder
+        },
+        Size = Vector3.new(0.699999988079071, 1.600000023841858, 0.15000000596046448),
+        Rotation = Vector3.new(-90, 0, 0),
+        ParticleTexture = "rbxasset://textures/particles/sparkles_main.dds",
+        ParticleColor = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.new(0, 0.666667, 0.333333)),
+            ColorSequenceKeypoint.new(1, Color3.new(1, 0, 1))
+        })
+    },
+    Wrench = {Color = Color3.new(0.9725, 0.9725, 0.9725), Size = Vector3.new(0.4, 0.6, 2.1)},
+    Gun = {Color = Color3.new(0.9725, 0.9725, 0.9725), Size = Vector3.new(0.15, 1.25, 0.9)},
+    GreenGear = {Color = Color3.new(0, 0.6667, 0), Size = Vector3.new(1.3, 1.25, 0.2)},
+    OrangeKey = {Color = Color3.new(1, 0.3922, 0), Size = Vector3.new(0.7, 1.6, 0.15)},
+    WhiteKey = {Color = Color3.new(0.9725, 0.9725, 0.9725), Size = Vector3.new(0.7, 1.6, 0.15)},
+    KeyCode = {Color = Color3.new(0.9725, 0.9725, 0.9725), Size = Vector3.new(0.85, 0.15, 1.5)},
+    Plank = {Color = Color3.new(0.5882, 0.2745, 0.0784), Size = Vector3.new(0.9, 0.3, 2.7)},
+    RedGear = {Color = Color3.new(1, 0.3137, 0), Size = Vector3.new(1.3, 1.25, 0.2)},
+    RedKey = {Color = Color3.new(1, 0, 0), Size = Vector3.new(0.7, 1.6, 0.15)},
+    YellowKey = {Color = Color3.new(0.8314, 0.6863, 0.2157), Size = Vector3.new(0.7, 1.6, 0.15)},
+    Gas = {Color = Color3.new(1, 0.349, 0.349), Size = Vector3.new(1.6736212968826294, 1.5793604850769043, 0.4502817392349243)},
+    Battery = {Color = Color3.new(0, 0, 0), Size = Vector3.new(0.5000000596046448, 1.5800000429153442, 0.5000000596046448)},
+    Bone = {Color = Color3.fromRGB(202, 191, 163), Size = Vector3.new(0.2999999523162842, 3.049999713897705, 0.6999999284744263)},
+    GreenEgg = {Color = Color3.fromRGB(52, 142, 64), Size = Vector3.new(0.9000003337860107, 1.3999996185302734, 0.8000000715255737)},
+    RedEgg = {Color = Color3.fromRGB(196, 40, 28), Size = Vector3.new(0.9000003337860107, 1.3999996185302734, 0.8000000715255737)},
+    EmptyVial = {Color = Color3.fromRGB(160, 132, 79), Size = Vector3.new(1.5500335693359375, 0.42501068115234375, 0.425048828125)},
+    GreenVial = {Color = Color3.fromRGB(0, 255, 0), Size = Vector3.new(1.5500335693359375, 0.4250030517578125, 0.42502593994140625)},
+    PinkVial = {Color = Color3.fromRGB(255, 0, 191), Size = Vector3.new(1.550048828125, 0.425018310546875, 0.4250335693359375)},
+    Carrot = {Color = Color3.fromRGB(202, 191, 163), Size = Vector3.new(0.2999999523162842, 2.5999996662139893, 0.6999999284744263), MeshId = "rbxassetid://741743576"},
+    RedKeycard = {Color = Color3.fromRGB(255, 255, 255), Size = Vector3.new(0.8250045776367188, 1.6500244140625, 0.15000057220458984), Rotation = Vector3.new(90, 0, 0), ParticleColor = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.new(0, 1, 0)), ColorSequenceKeypoint.new(1, Color3.new(1, 0, 0))})},
+    BlueKeycard = {Color = Color3.fromRGB(17, 17, 17), Size = Vector3.new(0.8250045776367188, 1.6500244140625, 0.15000057220458984), Rotation = Vector3.new(90.0009994506836, 0, -29.99799919128418), ParticleColor = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.new(0, 0, 1)), ColorSequenceKeypoint.new(1, Color3.new(1, 0, 1))})},
+    GreenKeycard = {Color = Color3.fromRGB(17, 17, 17), Size = Vector3.new(0.8250045776367188, 1.6500244140625, 0.15000057220458984), Rotation = Vector3.new(90, 0, 90), ParticleColor = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.new(0, 0, 1)), ColorSequenceKeypoint.new(1, Color3.new(0, 1, 0))})},
+    OrangeKeycard = {Color = Color3.fromRGB(255, 255, 255), Size = Vector3.new(0.8250083923339844, 1.649993896484375, 0.15000057220458984), Rotation = Vector3.new(89.99800109863281, -0.0010000000474974513, 45.00400161743164), ParticleColor = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.new(0, 1, 0.333333)), ColorSequenceKeypoint.new(1, Color3.new(1, 1, 0.333333))})},
+    LitTorch = {Color = Color3.fromRGB(99, 95, 98), Size = Vector3.new(1, 2.2000012397766113, 0.8500002026557922)},
+    Torch = {Color = Color3.fromRGB(99, 95, 98), Size = Vector3.new(1, 2.2000012397766113, 0.8500002026557922)},
+    Book = {Color = Color3.fromRGB(202, 191, 163), Size = Vector3.new(1.0499999523162842, 0.5000001192092896, 1.3499996662139893)},
+    Coin = {Color = Color3.fromRGB(245, 205, 48), Size = Vector3.new(1.0499999523162842, 1.0250005722045898, 0.22500112652778625)},
+    Crossbow = {Color = Color3.fromRGB(202, 191, 163), Size = Vector3.new(1.725000262260437, 0.5, 2.3500006198883057)},
+    Mallet = {Color = Color3.fromRGB(245, 205, 48), Size = Vector3.new(2.3999991416931152, 0.6000000834465027, 0.6250012516975403)},
+    WaterGun = {Color = Color3.fromRGB(163, 162, 165), Size = Vector3.new(0.25, 0.7000000476837158, 1.4000000953674316)},
+    FakePhoto = {Color = Color3.fromRGB(248, 248, 248), Size = Vector3.new(0.5, 0.10000000149011612, 0.6000000238418579)},
+    FireExtinguisher = {Color = Color3.fromRGB(202, 191, 163), Size = Vector3.new(0.5499999523162842, 1.5499999523162842, 0.49999991059303284)},
+    Grass = {Color = Color3.fromRGB(202, 191, 163), Size = Vector3.new(0.5499999523162842, 1.299999713897705, 0.6499993801116943)},
+    TNT = {Color = Color3.fromRGB(202, 191, 163), Size = Vector3.new(0.5499999523162842, 0.5999999046325684, 1.7499992847442627)},
+    Mirror = {Color = Color3.fromRGB(175, 221, 255), Size = Vector3.new(0.150146484375, 1.6500015258789062, 1.050048828125)},
+    Crowbar = {Color = Color3.fromRGB(99, 95, 98), Size = Vector3.new(0.49999988079071045, 0.10000000894069672, 1.7000004053115845)},
+    Chip = {Color = Color3.fromRGB(91, 154, 76), Size = Vector3.new(0.6368045210838318, 0.06782636791467667, 0.5792456865310669), MeshId = "rbxassetid://17848548940"},
+    Apple = {Color = Color3.fromRGB(163, 162, 165), Size = Vector3.new(0.7916666269302368, 0.9500002264976501, 0.7916666269302368), MeshId = "rbxassetid://16190555"},
+    Photo = {Color = Color3.fromRGB(243, 243, 243), Size = Vector3.new(1.2150006294250488, 0.10125003755092621, 1.3500005006790161)},
+    Shell = {Color = Color3.fromRGB(159, 161, 159), Size = Vector3.new(0.5000000596046448, 1.5800000429153442, 0.5000000596046448), MeshId = "rbxassetid://991156270"},
+    GlitchKey = {Size = Vector3.new(1.6062999963760376, 0.10412000119686127, 0.49499499797821045), MeshId = "rbxassetid://17848542337"},
+    ToyDino = {Color = Color3.fromRGB(0, 0, 0), Size = Vector3.new(0.42500007152557373, 0.9049997329711914, 1.29999840259552)},
+    ToyRobot = {Color = Color3.fromRGB(0, 0, 0), Size = Vector3.new(0.9750000238418579, 0.3800000846385956, 1.29999840259552)},
+    Mop = {Color = Color3.fromRGB(0, 255, 0), Size = Vector3.new(0.3499998450279236, 0.29999983310699463, 2.049999237060547), MeshId = "http://www.roblox.com/asset/?id=36365830"},
+    Scissors = {Color = Color3.fromRGB(0, 255, 0), Size = Vector3.new(1.0499999523162842, 1.3999994993209839, 0.15000000596046448), MeshId = "http://www.roblox.com/asset/?id=6550055"},
+    Screwdriver = {Color = Color3.fromRGB(0, 255, 0), Size = Vector3.new(1.9999995231628418, 0.44999969005584717, 0.40000003576278687), MeshId = "http://www.roblox.com/asset/?id=70265804"},
+    Ladder = {Color = Color3.fromRGB(99, 95, 98), Size = Vector3.new(0.949999988079071, 0.6755826473236084, 0.12150952965021133)},
+    Grass = {Color = Color3.fromRGB(202, 191, 163), Size = Vector3.new(0.5499999523162842, 1.299999713897705, 0.6499993801116943), MeshId = "rbxassetid://577111754"},
+    Remote = {Color = Color3.fromRGB(248, 248, 248), Size = Vector3.new(0.9999999403953552, 0.25, 0.9000000357627869), MeshId = "rbxassetid://81616133"},
+    SmokeGrenade = {Color = Color3.fromRGB(0, 0, 0), Size = Vector3.new(0.5000000596046448, 1.5800000429153442, 0.5000000596046448), MeshId = "http://www.roblox.com/asset/?id=88794862"},
+    Blowtorch = {Color = Color3.fromRGB(17, 17, 17), Size = Vector3.new(1.3321526050567627, 0.8326340913772583, 0.46931153535842896)},
+    ElevatorKey = {Color = Color3.fromRGB(91, 93, 105), Size = Vector3.new(0.4500015377998352, 1.5999999046325684, 0.14999990165233612), MeshId = "rbxassetid://456878024"},
+    Gears = {Color = Color3.fromRGB(159, 161, 172), Size = Vector3.new(1.3000000715255737, 1.2500003576278687, 0.19999995827674866), MeshId = "rbxassetid://524706126"},
+    Axe = {Color = Color3.fromRGB(163, 162, 165), Size = Vector3.new(0.30000001192092896, 2, 0.75), MeshId = "http://www.roblox.com/asset?id=145815658"},
+    Shovel = {Color = Color3.fromRGB(105, 102, 92), Size = Vector3.new(0.5, 2, 0.20000000298023224), MeshId = "rbxassetid://1448137661"},
+    WoodenSword = {Color = Color3.fromRGB(163, 162, 165), Size = Vector3.new(1, 0.5, 3), MeshId = "http://www.roblox.com/asset/?id=12130075"},
+    GrappleHook = {Color = Color3.fromRGB(0, 0, 0), Size = Vector3.new(0.25, 1, 1.75), MeshId = "http://www.roblox.com/asset/?id=30308256"},
+    Candle = {Color = Color3.fromRGB(248, 248, 248), Size = Vector3.new(0.8999999761581421, 1.2000000476837158, 0.8999999761581421), MeshId = "rbxassetid://1949604058"},
+    Rope = {Color = Color3.fromRGB(124, 92, 70), Size = Vector3.new(1, 1, 0.3499999940395355), MeshId = "http://www.roblox.com/asset/?id=16606212"},
+    RustySword = {Color = Color3.fromRGB(248, 248, 248), Size = Vector3.new(2.4000000953674316, 0.4950007200241089, 0.49554163217544556)},
+    Pie = {Color = Color3.fromRGB(99, 95, 98), Size = Vector3.new(1, 1, 0.30000001192092896), MeshId = "http://www.roblox.com/asset/?id=18417911"},
+    Spray = {Color = Color3.fromRGB(99, 95, 98), Size = Vector3.new(0.699999988079071, 1.600000023841858, 0.699999988079071), MeshId = "http://www.roblox.com/asset/?id=79146128"},
+    Weights = {Color = Color3.fromRGB(99, 95, 98), Size = Vector3.new(1.399999976158142, 0.6000000238418579, 0.6000000238418579), MeshId = "http://www.roblox.com/asset/?id=122333663"},
+    GreenPotion = {Color = Color3.fromRGB(0, 255, 0), Size = Vector3.new(0.8999993205070496, 1.2000482082366943, 0.8999993801116943), Material = Enum.Material.Glass},
+    RedPotion = {Color = Color3.fromRGB(255, 0, 0), Size = Vector3.new(0.9005239009857178, 1.2017748355865479, 0.901119589805603), Material = Enum.Material.Glass},
+    PurplePotion = {Color = Color3.fromRGB(140, 91, 159), Size = Vector3.new(1.2000408172607422, 0.8999996185302734, 0.901878833770752), Material = Enum.Material.Glass},
+    EmptyBacket = {Color = Color3.fromRGB(0, 255, 255), Size = Vector3.new(0.699999988079071, 0.7792472243309021, 0.15000000596046448)},
+    Heart = {Color = Color3.fromRGB(218, 43, 46), Size = Vector3.new(1.3037282228469849, 1.1786487102508545, 0.32216697931289673), MeshId = "rbxassetid://126620494244800"},
+    FilledBucket = {Color = Color3.fromRGB(0, 255, 255), Size = Vector3.new(0.699999988079071, 0.7792472243309021, 0.15000000596046448)},
+    BlueWire = {Color = Color3.fromRGB(0, 0, 255), Size = Vector3.new(0.25, 2, 0.25), MeshId = "rbxassetid://6830387841"},
+    GreenWire = {Color = Color3.fromRGB(0, 255, 0), Size = Vector3.new(0.25, 2, 0.25), MeshId = "rbxassetid://6830387841"},
+    RedWire = {Color = Color3.fromRGB(255, 0, 0), Size = Vector3.new(0.25, 2, 0.25), MeshId = "rbxassetid://6830387841"},
+    YellowWire = {Color = Color3.fromRGB(255, 255, 0), Size = Vector3.new(0.25, 2, 0.25), MeshId = "rbxassetid://6830387841"},
+    MilitaryKnife = {Color = Color3.fromRGB(255, 255, 0), Size = Vector3.new(0.25, 3, 0.5), MeshId = "http://www.roblox.com/asset/?id=121944778"},
+    DayBucket = {Color = Color3.fromRGB(248, 248, 248), Size = Vector3.new(0.5, 0.5, 0.5), MeshId = "http://www.roblox.com/asset/?id=15952512", TextureId = "http://www.roblox.com/asset/?id=11322789612"},
+    NightBucket = {Color = Color3.fromRGB(248, 248, 248), Size = Vector3.new(0.5, 0.5, 0.5), MeshId = "http://www.roblox.com/asset/?id=15952512", TextureId = "http://www.roblox.com/asset/?id=11322790908"},
+    SunsetBucket = {Color = Color3.fromRGB(248, 248, 248), Size = Vector3.new(0.5, 0.5, 0.5), MeshId = "http://www.roblox.com/asset/?id=15952512", TextureId = "http://www.roblox.com/asset/?id=11322790307"},
+    NewBlueKey = {Color = Color3.fromRGB(0, 255, 255), Size = Vector3.new(0.5, 1.5, 0.15000000596046448), MeshId = "rbxassetid://456878024"},
+    NewBook = {Color = Color3.fromRGB(202, 191, 163), Size = Vector3.new(1.0499999523162842, 0.5000001192092896, 1.3499996662139893), MeshId = "http://www.roblox.com/asset/?id=1136139", TextureId = "rbxassetid://9644371"},
+    NewRedKey = {Color = Color3.fromRGB(255, 0, 0), Size = Vector3.new(0.5, 1.5, 0.15000000596046448), MeshId = "rbxassetid://456878024"},
+    NewRemote = {Color = Color3.fromRGB(248, 248, 248), Size = Vector3.new(0.9999999403953552, 0.25, 0.9000000357627869), MeshId = "rbxassetid://81616133", TextureId = "http://www.roblox.com/asset/?id=81616111"},
+    NewWhiteKey = {Color = Color3.fromRGB(248, 248, 248), Size = Vector3.new(0.5, 1.5, 0.15000000596046448), MeshId = "rbxassetid://456878024"},
+    NewBlackKey = {Color = Color3.fromRGB(17, 17, 17), Size = Vector3.new(0.5, 1.5, 0.15000000596046448), MeshId = "rbxassetid://456878024"}
+}
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "ItemManagerGUI"
+ScreenGui.Parent = CoreGui
+ScreenGui.ResetOnSpawn = false
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 250, 0, 350)
+MainFrame.Position = UDim2.new(0.5, -125, 0.5, -175)
+MainFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Visible = false
+MainFrame.Parent = ScreenGui
+
+local TitleBar = Instance.new("Frame")
+TitleBar.Name = "TitleBar"
+TitleBar.Size = UDim2.new(1, 0, 0, 30)
+TitleBar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+TitleBar.Parent = MainFrame
+
+local TitleText = Instance.new("TextLabel")
+TitleText.Text = "Item Manager"
+TitleText.Size = UDim2.new(0.8, 0, 1, 0)
+TitleText.TextColor3 = Color3.new(1, 1, 1)
+TitleText.BackgroundTransparency = 1
+TitleText.Parent = TitleBar
+
+local CloseButton = Instance.new("TextButton")
+CloseButton.Name = "CloseButton"
+CloseButton.Text = "X"
+CloseButton.Size = UDim2.new(0, 30, 1, 0)
+CloseButton.Position = UDim2.new(1, -30, 0, 0)
+CloseButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+CloseButton.TextColor3 = Color3.new(1, 1, 1)
+CloseButton.Parent = TitleBar
+
+local TabFrame = Instance.new("Frame")
+TabFrame.Name = "TabFrame"
+TabFrame.Size = UDim2.new(1, 0, 0, 30)
+TabFrame.Position = UDim2.new(0, 0, 0, 30)
+TabFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+TabFrame.Parent = MainFrame
+
+local FinderTabButton = Instance.new("TextButton")
+FinderTabButton.Name = "FinderTabButton"
+FinderTabButton.Text = "Items Finder"
+FinderTabButton.Size = UDim2.new(0.5, 0, 1, 0)
+FinderTabButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+FinderTabButton.TextColor3 = Color3.new(1, 1, 1)
+FinderTabButton.Parent = TabFrame
+
+local ESPTabButton = Instance.new("TextButton")
+ESPTabButton.Name = "ESPTabButton"
+ESPTabButton.Text = "Items ESP"
+ESPTabButton.Size = UDim2.new(0.5, 0, 1, 0)
+ESPTabButton.Position = UDim2.new(0.5, 0, 0, 0)
+ESPTabButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+ESPTabButton.TextColor3 = Color3.new(1, 1, 1)
+ESPTabButton.Parent = TabFrame
+
+local OpenButton = Instance.new("TextButton")
+OpenButton.Name = "OpenButton"
+OpenButton.Text = "Open Item Manager"
+OpenButton.Size = UDim2.new(0, 150, 0, 40)
+OpenButton.Position = UDim2.new(0, 10, 0, 10)
+OpenButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+OpenButton.TextColor3 = Color3.new(1, 1, 1)
+OpenButton.Parent = ScreenGui
+
+local FinderFrame = Instance.new("Frame")
+FinderFrame.Name = "FinderFrame"
+FinderFrame.Size = UDim2.new(1, -10, 1, -70)
+FinderFrame.Position = UDim2.new(0, 5, 0, 65)
+FinderFrame.BackgroundTransparency = 1
+FinderFrame.Parent = MainFrame
+FinderFrame.Visible = true
+
+local FinderItemList = Instance.new("ScrollingFrame")
+FinderItemList.Name = "FinderItemList"
+FinderItemList.Size = UDim2.new(1, 0, 1, -35)
+FinderItemList.Position = UDim2.new(0, 0, 0, 0)
+FinderItemList.BackgroundTransparency = 1
+FinderItemList.ScrollBarThickness = 5
+FinderItemList.Parent = FinderFrame
+
+local CollectButton = Instance.new("TextButton")
+CollectButton.Name = "CollectButton"
+CollectButton.Text = "Get Item"
+CollectButton.Size = UDim2.new(1, 0, 0, 30)
+CollectButton.Position = UDim2.new(0, 0, 1, -30)
+CollectButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+CollectButton.TextColor3 = Color3.new(1, 1, 1)
+CollectButton.Parent = FinderFrame
+
+local ESPFrame = Instance.new("Frame")
+ESPFrame.Name = "ESPFrame"
+ESPFrame.Size = UDim2.new(1, -10, 1, -70)
+ESPFrame.Position = UDim2.new(0, 5, 0, 65)
+ESPFrame.BackgroundTransparency = 1
+ESPFrame.Parent = MainFrame
+ESPFrame.Visible = false
+
+local NameToggleButton = Instance.new("TextButton")
+NameToggleButton.Name = "NameToggleButton"
+NameToggleButton.Text = "Enable Item Names: True"
+NameToggleButton.Size = UDim2.new(1, 0, 0, 30)
+NameToggleButton.Position = UDim2.new(0, 0, 0, 0)
+NameToggleButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+NameToggleButton.TextColor3 = Color3.new(1, 1, 1)
+NameToggleButton.Parent = ESPFrame
+
+local ESPItemList = Instance.new("ScrollingFrame")
+ESPItemList.Name = "ESPItemList"
+ESPItemList.Size = UDim2.new(1, 0, 1, -35)
+ESPItemList.Position = UDim2.new(0, 0, 0, 35)
+ESPItemList.BackgroundTransparency = 1
+ESPItemList.ScrollBarThickness = 5
+ESPItemList.Parent = ESPFrame
+
+local function CompareColorSequence(seq1, seq2)
+    if not seq1 or not seq2 then return false end
+    if #seq1.Keypoints ~= #seq2.Keypoints then return false end
+    for i, kp1 in ipairs(seq1.Keypoints) do
+        local kp2 = seq2.Keypoints[i]
+        local colorDiff = (kp1.Value.R - kp2.Value.R)^2 +
+                         (kp1.Value.G - kp2.Value.G)^2 +
+                         (kp1.Value.B - kp2.Value.B)^2
+        if colorDiff > 0.01 then return false end
+    end
+    return true
+end
+
+local function CompareRotation(rot1, rot2)
+    local rotDiff = (rot1.X - rot2.X)^2 + (rot1.Y - rot2.Y)^2 + (rot1.Z - rot2.Z)^2
+    return rotDiff < 0.1
+end
+
+local function IdentifyItem(item)
+    if not ITEM_PROPERTIES then return nil end
+    if item:IsA("BasePart") or item:IsA("UnionOperation") or item:IsA("MeshPart") then
+        for itemName, properties in pairs(ITEM_PROPERTIES) do
+            local colorMatch = false
+            if properties.Colors then
+                for _, color in ipairs(properties.Colors) do
+                    local colorDiff = (item.Color.R - color.R)^2 +
+                                      (item.Color.G - color.G)^2 +
+                                      (item.Color.B - color.B)^2
+                    if colorDiff < (itemName == "GreenGear" and 0.5 or itemName == "RedGear" and 0.2 or 0.1) then
+                        colorMatch = true
+                        break
+                    end
+                end
+            else
+                local colorDiff = properties.Color and ((item.Color.R - properties.Color.R)^2 +
+                                  (item.Color.G - properties.Color.G)^2 +
+                                  (item.Color.B - properties.Color.B)^2) or 0
+                colorMatch = not properties.Color or colorDiff < (itemName == "GreenGear" and 0.5 or itemName == "RedGear" and 0.2 or 0.1)
+            end
+            local sizeDiff = (item.Size - properties.Size).Magnitude
+            local isGreenGear = itemName == "GreenGear"
+            local isRedGear = itemName == "RedGear"
+            local materialMatch = properties.Material and item.Material == properties.Material or not properties.Material
+            if colorMatch and
+               sizeDiff < (isGreenGear and 0.5 or isRedGear and 0.2 or properties.MeshId and 0.01 or 0.1) and
+               materialMatch then
+                if properties.MeshId then
+                    local mesh = item:IsA("MeshPart") and item or item:FindFirstChildOfClass("SpecialMesh")
+                    if mesh and mesh.MeshId == properties.MeshId then
+                        if properties.TextureId then
+                            local textureId = item:IsA("MeshPart") and item.TextureID or (mesh and mesh.TextureId or "")
+                            if textureId == properties.TextureId then
+                                return itemName
+                            end
+                        else
+                            return itemName
+                        end
+                    end
+                elseif properties.ParticleColor or properties.ParticleTexture then
+                    local particleEmitter = item:FindFirstChildOfClass("ParticleEmitter")
+                    local particleMatch = true
+                    if properties.ParticleColor and particleEmitter and not CompareColorSequence(particleEmitter.Color, properties.ParticleColor) then
+                        particleMatch = false
+                    end
+                    if properties.ParticleTexture and particleEmitter and particleEmitter.Texture ~= properties.ParticleTexture then
+                        particleMatch = false
+                    end
+                    if particleMatch then
+                        if properties.Rotation and CompareRotation(item.Rotation, properties.Rotation) then
+                            return itemName
+                        elseif not properties.Rotation then
+                            return itemName
+                        end
+                    elseif properties.Rotation and CompareRotation(item.Rotation, properties.Rotation) then
+                        return itemName
+                    end
+                elseif properties.Rotation and CompareRotation(item.Rotation, properties.Rotation) then
+                    return itemName
+                else
+                    return itemName
+                end
+            end
+        end
+    end
+    return nil
+end
+
+local function CollectItem(item)
+    local char = Player.Character
+    if not char or not char:FindFirstChild("HumanoidRootPart") then return false end
+    
+    local originalPos = char.HumanoidRootPart.CFrame
+    char.HumanoidRootPart.CFrame = item.Object.CFrame * CFrame.new(0, 2, 0)
+    task.wait(0.05)
+
+    local promptFound = false
+    local prompt = nil
+    prompt = item.Object:FindFirstChildOfClass("ProximityPrompt")
+    if prompt then
+        for i = 1, 8 do
+            fireproximityprompt(prompt)
+            task.wait(0.02)
+        end
+        promptFound = true
+    end
+    if not promptFound then
+        for _, child in ipairs(item.Object:GetDescendants()) do
+            if child:IsA("ProximityPrompt") then
+                for i = 1, 8 do
+                    fireproximityprompt(child)
+                    task.wait(0.02)
+                end
+                promptFound = true
+                break
+            end
+        end
+    end
+    if not promptFound then
+        local parent = item.Object.Parent
+        if parent and (parent:IsA("BasePart") or parent:IsA("MeshPart") or parent:IsA("UnionOperation")) then
+            prompt = parent:FindFirstChildOfClass("ProximityPrompt")
+            if prompt then
+                for i = 1, 8 do
+                    fireproximityprompt(prompt)
+                    task.wait(0.02)
+                end
+                promptFound = true
+            end
+        end
+    end
+    
+    if promptFound then
+        task.wait(0.1)
+    else
+        local clickDetector = item.Object:FindFirstChildOfClass("ClickDetector")
+        if clickDetector and clickDetector.MaxActivationDistance > 0 then
+            for i = 1, 5 do
+                fireclickdetector(clickDetector)
+                task.wait(0.02)
+            end
+            task.wait(0.1)
+        else
+            for _, child in ipairs(item.Object:GetDescendants()) do
+                if child:IsA("ClickDetector") and child.MaxActivationDistance > 0 then
+                    for i = 1, 5 do
+                        fireclickdetector(child)
+                        task.wait(0.02)
+                    end
+                    task.wait(0.1)
+                    break
+                end
+            end
+        end
+    end
+
+    local backpack = Player:WaitForChild("Backpack")
+    local collectedTool = nil
+    for i = 1, 5 do
+        collectedTool = backpack:FindFirstChild(item.Name)
+        if collectedTool then
+            break
+        end
+        task.wait(0.05)
+    end
+    
+    task.wait(0.05)
+    char.HumanoidRootPart.CFrame = originalPos
+    
+    return collectedTool ~= nil
+end
+
+local function FindItems()
+    local foundItems = {}
+    for _, item in ipairs(workspace:GetDescendants()) do
+        if item:IsA("BasePart") or item:IsA("UnionOperation") or item:IsA("MeshPart") then
+            local hasInteraction = false
+            local prompt = item:FindFirstChildOfClass("ProximityPrompt")
+            if prompt and prompt.Enabled then
+                hasInteraction = true
+            end
+            if not hasInteraction then
+                for _, child in ipairs(item:GetDescendants()) do
+                    if child:IsA("ProximityPrompt") and child.Enabled then
+                        hasInteraction = true
+                        break
+                    end
+                end
+            end
+            if not hasInteraction then
+                local parent = item.Parent
+                if parent and (parent:IsA("BasePart") or parent:IsA("MeshPart") or parent:IsA("UnionOperation")) then
+                    prompt = parent:FindFirstChildOfClass("ProximityPrompt")
+                    if prompt and prompt.Enabled then
+                        hasInteraction = true
+                    end
+                end
+            end
+            if not hasInteraction then
+                local clickDetector = item:FindFirstChildOfClass("ClickDetector")
+                if clickDetector and clickDetector.MaxActivationDistance > 0 then
+                    hasInteraction = true
+                else
+                    for _, child in ipairs(item:GetDescendants()) do
+                        if child:IsA("ClickDetector") and child.MaxActivationDistance > 0 then
+                            hasInteraction = true
+                            break
+                        end
+                    end
+                end
+            end
+            if hasInteraction then
+                local itemName = IdentifyItem(item)
+                if itemName then
+                    table.insert(foundItems, {Object = item, Name = itemName})
+                end
+            end
+        end
+    end
+    return foundItems
+end
+
+local SelectedItem = nil
+local function UpdateFinderList()
+    FinderItemList:ClearAllChildren()
+    local items = FindItems()
+    for i, item in ipairs(items) do
+        local button = Instance.new("TextButton")
+        button.Text = item.Name
+        button.Size = UDim2.new(1, 0, 0, 30)
+        button.Position = UDim2.new(0, 0, 0, (i-1)*35)
+        button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        button.TextColor3 = Color3.new(1, 1, 1)
+        button.Parent = FinderItemList
+        button.MouseButton1Click:Connect(function()
+            for _, child in ipairs(FinderItemList:GetChildren()) do
+                if child:IsA("TextButton") then
+                    child.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+                end
+            end
+            button.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
+            SelectedItem = item
+        end)
+    end
+    FinderItemList.CanvasSize = UDim2.new(0, 0, 0, #items * 35)
+end
+
+local ShowItemNames = true
+local ESPObjects = {} 
+local ESPSettings = {} 
+
+local function CreateESP(item, itemName)
+    local highlight = Instance.new("Highlight")
+    highlight.FillColor = Color3.fromRGB(0, 255, 0)
+    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+    highlight.FillTransparency = 0.5
+    highlight.OutlineTransparency = 0
+    highlight.Adornee = item
+    highlight.Parent = item
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "ItemNameESP"
+    billboard.Size = UDim2.new(0, 100, 0, 30)
+    billboard.StudsOffset = Vector3.new(0, 2, 0)
+    billboard.AlwaysOnTop = true
+    billboard.Enabled = ShowItemNames
+    billboard.Parent = item
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Size = UDim2.new(1, 0, 1, 0)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Text = itemName
+    nameLabel.TextColor3 = Color3.new(1, 1, 1)
+    nameLabel.TextStrokeTransparency = 0
+    nameLabel.TextScaled = true
+    nameLabel.Parent = billboard
+    return highlight, billboard
+end
+
+local function UpdateESPList(updateGUI)
+    for item, esp in pairs(ESPObjects) do
+        if esp.Highlight and esp.Highlight.Parent then
+            esp.Highlight:Destroy()
+        end
+        if esp.Billboard and esp.Billboard.Parent then
+            esp.Billboard:Destroy()
+        end
+    end
+    ESPObjects = {}
+
+    local items = FindItems()
+
+    if updateGUI then
+        ESPItemList:ClearAllChildren()
+        for i, item in ipairs(items) do
+            local frame = Instance.new("Frame")
+            frame.Size = UDim2.new(1, 0, 0, 30)
+            frame.Position = UDim2.new(0, 0, 0, (i-1)*35)
+            frame.BackgroundTransparency = 1
+            frame.Parent = ESPItemList
+            local nameButton = Instance.new("TextButton")
+            nameButton.Text = item.Name
+            nameButton.Size = UDim2.new(0.8, 0, 1, 0)
+            nameButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+            nameButton.TextColor3 = Color3.new(1, 1, 1)
+            nameButton.Parent = frame
+            local espButton = Instance.new("TextButton")
+            espButton.Text = ESPSettings[item.Name] and "✓" or "X"
+            espButton.Size = UDim2.new(0.2, 0, 1, 0)
+            espButton.Position = UDim2.new(0.8, 0, 0, 0)
+            espButton.BackgroundColor3 = ESPSettings[item.Name] and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 50, 50)
+            espButton.TextColor3 = Color3.new(1, 1, 1)
+            espButton.Parent = frame
+            espButton.MouseButton1Click:Connect(function()
+                ESPSettings[item.Name] = not ESPSettings[item.Name]
+                espButton.Text = ESPSettings[item.Name] and "✓" or "X"
+                espButton.BackgroundColor3 = ESPSettings[item.Name] and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 50, 50)
+                if ESPSettings[item.Name] then
+                    local highlight, billboard = CreateESP(item.Object, item.Name)
+                    ESPObjects[item.Object] = {Highlight = highlight, Billboard = billboard}
+                else
+                    if ESPObjects[item.Object] then
+                        ESPObjects[item.Object].Highlight:Destroy()
+                        ESPObjects[item.Object].Billboard:Destroy()
+                        ESPObjects[item.Object] = nil
+                    end
+                end
+            end)
+        end
+        ESPItemList.CanvasSize = UDim2.new(0, 0, 0, #items * 35)
+    end
+
+    for _, item in ipairs(items) do
+        if ESPSettings[item.Name] then
+            local highlight, billboard = CreateESP(item.Object, item.Name)
+            ESPObjects[item.Object] = {Highlight = highlight, Billboard = billboard}
+        end
+    end
+end
+
+OpenButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+    if MainFrame.Visible then
+        if FinderFrame.Visible then
+            UpdateFinderList()
+        else
+            UpdateESPList(true)
+        end
+    end
+end)
+
+CloseButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+end)
+
+FinderTabButton.MouseButton1Click:Connect(function()
+    FinderFrame.Visible = true
+    ESPFrame.Visible = false
+    FinderTabButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+    ESPTabButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    UpdateFinderList()
+end)
+
+ESPTabButton.MouseButton1Click:Connect(function()
+    FinderFrame.Visible = false
+    ESPFrame.Visible = true
+    FinderTabButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    ESPTabButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+    UpdateESPList(true)
+end)
+
+CollectButton.MouseButton1Click:Connect(function()
+    if SelectedItem then
+        local success = CollectItem(SelectedItem)
+        if success then
+            task.wait(0.1)
+            UpdateFinderList()
+            UpdateESPList(true)
+            SelectedItem = nil
+        end
+    end
+end)
+
+NameToggleButton.MouseButton1Click:Connect(function()
+    ShowItemNames = not ShowItemNames
+    NameToggleButton.Text = "Enable Item Names: " .. tostring(ShowItemNames)
+    for _, esp in pairs(ESPObjects) do
+        esp.Billboard.Enabled = ShowItemNames
+    end
+end)
+
+task.spawn(function()
+    while true do
+        if MainFrame.Visible then
+            if FinderFrame.Visible then
+                UpdateFinderList()
+            elseif ESPFrame.Visible then
+                UpdateESPList(true)
+            else
+                UpdateESPList(false)
+            end
+        else
+            UpdateESPList(false)
+        end
+        task.wait(2)
+    end
+end)
